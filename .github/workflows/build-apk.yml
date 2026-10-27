@@ -4,7 +4,7 @@ on:
   push:
     branches: [ main ]
 permissions:
-  contents: read
+  contents: write
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -20,9 +20,24 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
       - name: Build debug APK
         run: gradle --no-daemon assembleDebug
-      - name: Upload APK
+      - name: Verify APK file
+        run: |
+          test -s app/build/outputs/apk/debug/app-debug.apk
+          unzip -t app/build/outputs/apk/debug/app-debug.apk
+      - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: TehranOfflineNavigator-debug
           path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
+      - name: Publish direct APK download
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: latest-build
+          name: Latest Android APK
+          prerelease: true
+          make_latest: true
+          overwrite_files: true
+          files: app/build/outputs/apk/debug/app-debug.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
