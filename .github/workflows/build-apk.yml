@@ -20,14 +20,20 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
       - name: Build debug APK
         run: gradle --no-daemon assembleDebug
-      - name: Verify APK file
+      - name: Verify APK and signing
+        shell: bash
         run: |
-          test -s app/build/outputs/apk/debug/app-debug.apk
-          unzip -t app/build/outputs/apk/debug/app-debug.apk
+          APK="app/build/outputs/apk/debug/app-debug.apk"
+          test -s "$APK"
+          unzip -t "$APK"
+          APKSIGNER="$(find "$ANDROID_HOME/build-tools" -name apksigner -type f | sort -V | tail -n 1)"
+          test -n "$APKSIGNER"
+          "$APKSIGNER" verify --verbose "$APK"
+          "$APKSIGNER" verify --print-certs "$APK"
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: TehranOfflineNavigator-debug
+          name: TehranOfflineNavigator-debug-v2
           path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
       - name: Publish direct APK download
