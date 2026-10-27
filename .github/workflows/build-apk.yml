@@ -26,6 +26,7 @@ jobs:
       - name: Verify APK and signing
         shell: bash
         run: |
+          set -euo pipefail
           APK="app/build/outputs/apk/debug/app-debug.apk"
           test -s "$APK"
           unzip -t "$APK"
@@ -33,26 +34,25 @@ jobs:
           AAPT="$(find "$ANDROID_HOME/build-tools" -name aapt -type f | sort -V | tail -n 1)"
           test -n "$APKSIGNER"
           test -n "$AAPT"
-          "$APKSIGNER" verify --verbose "$APK"
-          "$APKSIGNER" verify --print-certs "$APK"
+          "$APKSIGNER" verify --verbose --print-certs "$APK"
           "$AAPT" dump badging "$APK" | tee app-badging.txt
-          grep -q "package: name='ir.tehran.offlinenavigator.v4' versionCode='4'" app-badging.txt
-          cp "$APK" TehranOfflineNavigator-v4.apk
-          sha256sum TehranOfflineNavigator-v4.apk
+          grep -q "package: name='ir.tehran.offlinenavigator.v5' versionCode='5'" app-badging.txt
+          cp "$APK" TehranOfflineNavigator-v5.apk
+          sha256sum TehranOfflineNavigator-v5.apk
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: TehranOfflineNavigator-v4
-          path: TehranOfflineNavigator-v4.apk
+          name: TehranOfflineNavigator-v5
+          path: TehranOfflineNavigator-v5.apk
           if-no-files-found: error
       - name: Publish exact verified APK
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: install-test-v4
-          name: Tehran Offline Navigator v4 (install test)
+          tag_name: install-test-v5
+          name: Tehran Offline Navigator v5 (clean install test)
           prerelease: true
           make_latest: false
           overwrite_files: true
-          files: TehranOfflineNavigator-v4.apk
+          files: TehranOfflineNavigator-v5.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
