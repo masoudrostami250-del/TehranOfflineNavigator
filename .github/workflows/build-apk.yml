@@ -36,23 +36,23 @@ jobs:
           "$APKSIGNER" verify --verbose "$APK"
           "$APKSIGNER" verify --print-certs "$APK"
           "$AAPT" dump badging "$APK" | tee app-badging.txt
-          grep -q "package: name='ir.tehran.offlinenavigator.v3' versionCode='3'" app-badging.txt
-          cp "$APK" TehranOfflineNavigator-v3.apk
-          sha256sum TehranOfflineNavigator-v3.apk
+          grep -q "package: name='ir.tehran.offlinenavigator.v4' versionCode='4'" app-badging.txt
+          cp "$APK" TehranOfflineNavigator-v4.apk
+          sha256sum TehranOfflineNavigator-v4.apk
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: TehranOfflineNavigator-v3
-          path: TehranOfflineNavigator-v3.apk
+          name: TehranOfflineNavigator-v4
+          path: TehranOfflineNavigator-v4.apk
           if-no-files-found: error
       - name: Publish exact verified APK
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: install-test-v3
-          name: Tehran Offline Navigator v3 (install test)
+          tag_name: install-test-v4
+          name: Tehran Offline Navigator v4 (install test)
           prerelease: true
           make_latest: false
           overwrite_files: true
-          files: TehranOfflineNavigator-v3.apk
+          files: TehranOfflineNavigator-v4.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
